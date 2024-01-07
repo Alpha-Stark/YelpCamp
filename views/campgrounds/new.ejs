@@ -1,0 +1,78 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="row">
+  <h1 class="text-center">New Campground</h1>
+  <div class="col-md-6 offset-md-3">
+    <!-- means out of 12 portions available, we want 6, but we also dont want it on full left, hence we offset it by 3, so that it comes in centre -->
+    <form action="/campgrounds" method="post" novalidate class="validation-form" enctype="multipart/form-data">
+      <!-- you can do all inner editing by looking in Bootstrap docs -->
+      <div class="mb-3">
+        <label class="form-label" for="title">Title: </label>
+        <input class="form-control" type="text" name="campground[title]" id="title" required />
+        <div class="valid-feedback">Looks Good!!</div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="location">Location: </label>
+        <input class="form-control" type="text" name="campground[location]" id="location" required />
+        <div class="valid-feedback">Looks Good!!</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="description">Description: </label>
+        <textarea class="form-control" type="text" name="campground[description]" id="description" required></textarea>
+        <div class="valid-feedback">Looks Good!!</div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="price">Price:</label>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="price-label">$</span>
+          <input type="text" class="form-control" placeholder="0.00" aria-label="0.00" aria-describedby="price-label" name="campground[price]" required />
+          <div class="valid-feedback">Looks Good!!</div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="image" class="form-label">Choose Image(s)</label>
+        <input class="form-control" type="file" name="image" id="image" multiple />
+      </div>
+      <!-- <div class="mb-3">
+        <label class="form-label" for="image">Image URL: </label>
+        <input class="form-control" type="text" name="campground[image]" id="image" required />
+        <div class="valid-feedback">Looks Good!!</div>
+      </div> -->
+      <div class="mb-3 d-flex align-items-center justify-content-center">
+        <button class="btn btn-success">Add Campground</button>
+      </div>
+    </form>
+    <div class="d-flex align-items-center justify-content-center">
+      <a class="btn btn-info" href="/campgrounds">Cancle</a>
+    </div>
+  </div>
+</div>
+
+<!-- <script>
+  (() => {
+    "use strict";
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    const forms = document.querySelectorAll(".validation-form");
+
+    // Loop over them and prevent submission
+    Array.from(forms).forEach((form) => {
+      form.addEventListener(
+        "submit",
+        (event) => {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+
+          form.classList.add("was-validated");
+        },
+        false
+      );
+    });
+  })();
+</script> -->
+
+<!-- So what we did here for Bootstrap validation is applied required attribut where required and told the form tag to not validate(browser default)[==> novalidate] and added a class for JS to select it and work on it. and then pasted this js code from website here to make it actually work by matching/changing the class name to that we gave in form tag.   -->
+<!-- But now we'll move it to layers/boilerplate.ejs -->

@@ -1,0 +1,57 @@
+<% layout("layouts/boilerplate") %>
+
+<div id="cluster-map"></div>
+
+<h1>All Campgrounds</h1>
+<div>
+  <a href="/campgrounds/new">Add CampGround</a>
+</div>
+<ul>
+  <!-- <% for (let campground of campgrounds) { %>
+  <li>
+    <h3>
+      <a href="/campgrounds/<%= campground._id %>"> <%= campground.title %> </a>
+    </h3>
+  </li>
+  <br />
+  <% } %> 
+-->
+  <% for (let campground of campgrounds) { %>
+  <div class="card mb-3">
+    <!-- margin at bottom of 3, to make elements look seperate -->
+    <div class="row">
+      <div class="col-md-4">
+        <!-- means the div will span 4 out of 12 available of it's parent row class.(of the grid on medium-sized screens and large) -->
+        <% if(campground.images.length){ %>
+        <img crossorigin="anonymous" class="img-fluid" src="<%= campground.images[0].url %>" alt="" />
+        <% }else{ %>
+        <img crossorigin="anonymous" class="img-fluid" src="https://res.cloudinary.com/dtuiy5fat/image/upload/v1702797993/YelpCamp/lhgkpex8phpon04qdgjp.jpg" alt="" />
+        <% } %>
+      </div>
+      <div class="col-md-8">
+        <!-- means the div will span remaining 8 out of 12 available of it's parent row class. -->
+        <div class="card-body">
+          <h5 class="card-title"><%= campground.title %></h5>
+          <!-- <h5 class="card-title"><%= campground.properties.popUpMarkup %></h5> -->
+          <!-- Hence by this  we can conform that, without changing the main Schema Structure, we added a field called properites and can access stuff from it. 
+            But the passed object to the clusterMap.js will not have it. Because after JSON.stringify(campgrounds), because by default, Mongoose does not include virtuals when you convert a document to JSON.  
+            Docs(https://mongoosejs.com/docs/tutorials/virtuals.html#virtuals-in-json)-->
+          <p class="card-text"><%= campground.description %></p>
+          <p class="card-text">
+            <small class="text-muted"><%= campground.location %></small>
+          </p>
+          <p class="card-text">Price: $<%= campground.price %></p>
+          <a href="/campgrounds/<%= campground._id %>" class="btn btn-primary"> View </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% } %>
+</ul>
+
+<script>
+  const mapToken = "<%- process.env.MAPBOX_TOKEN%>";
+  // const campgrounds = <%- JSON.stringify(campgrounds) %> //Did stringify, because the JS cannot read the properties which are not string/quoted"". Hence we converted it into JSON which can we understood by JS too.Throught this we can access the campgrounnd data on other side.(showPageMap.js)
+  const campgrounds = {features:<%- JSON.stringify(campgrounds) %>} //Did this because our mapbox searches a field called features, to find the data to render.(And it is a standard thinf/field too). Hence we made and object outside and put our original data in the name of features field.
+</script>
+<script src="/javascripts/clusterMap.js"></script>

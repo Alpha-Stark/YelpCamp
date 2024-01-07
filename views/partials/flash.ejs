@@ -1,0 +1,13 @@
+<% if(success && success.length){ %>
+<!-- Thisis because success is empty insted of undefined, hence we must also include success.length to solve that too -->
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <strong><%= success %></strong>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<% } else if(error && error.length){ %>
+<!-- Thisis because success is empty insted of undefined, hence we must also include success.length to solve that too -->
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <strong><%= error %></strong>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<% } %>

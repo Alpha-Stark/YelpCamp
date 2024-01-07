@@ -1,0 +1,82 @@
+//This is a readme for Redirecting after login. Folder 51. (51 - YelpCamp Adding In Authentication)
+In the upcoming video(013 ReturnTo Behavior), we will cover how to redirect users back to the page they were 
+visiting before being sent to the login page, once they've successfully logged in. However, due to some 
+recent security  improvements in the Passport.js version updates (used for authentication in our YelpCamp 
+application), the session now gets cleared after a successful login. This causes a problem with our returnTo 
+redirect logic because we store the returnTo route path (i.e., the path where the user should be redirected 
+back after login) in the session (req.session.returnTo), which gets cleared after a successful login.
+
+To resolve this issue, we will use a middleware function to transfer the returnTo value from the session 
+(req.session.returnTo) to the Express.js app res.locals object before the passport.authenticate() function 
+is executed in the /login POST route. Therefore, keep these instructions handy while coding along with the 
+next video.
+
+In Express.js, res.locals is an object that provides a way to pass data through the application during the 
+request-response cycle. It allows you to store variables that can be accessed by your templates and other 
+middleware functions.
+
+Here are the instructions to fix this (you would use these instructions in conjunction with the next video 
+i.e. you would still write the code from the next video and then apply these modifications on top of 
+the upcoming video code):
+
+1. In the middleware.js file, add the code that creates a new middleware function called storeReturnTo which 
+is used to save the returnTo value from the session (req.session.returnTo) to res.locals:
+
+module.exports.storeReturnTo = (req, res, next) => {
+    if (req.session.returnTo) {
+        res.locals.returnTo = req.session.returnTo;
+    }
+    next();
+}
+
+Also, just a note: as seen in the upcoming video lecture, you still need to add the 
+req.session.returnTo = req.originalUrl line to the isLoggedIn middleware (in the middleware.js file), 
+like this:
+
+module.exports.isLoggedIn = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        req.session.returnTo = req.originalUrl; // add this line
+        req.flash('error', 'You must be signed in first!');
+        return res.redirect('/login');
+    }
+    next();
+}
+
+2. In the POST /login route (in the routes/users.js file), call the storeReturnTo middleware function before 
+passport.authenticate(). Remember that middleware functions are executed in the order they are specified in 
+the route. So, in this case, storeReturnTo should be called first, followed by passport.authenticate() and 
+then the final middleware function to redirect the user.
+
+First, at the top of the routes/users.js code, add this line to import the storeReturnTo function from the 
+middleware.js file that we just created:
+
+const { storeReturnTo } = require('../middleware');
+Then, in the same file, add the storeReturnTo middleware function before the passport.authenticate 
+middleware in the /login POST route.
+
+router.post('/login',
+    // use the storeReturnTo middleware to save the returnTo value from session to res.locals
+    storeReturnTo,
+    // passport.authenticate logs the user in and clears req.session
+    passport.authenticate('local', {failureFlash: true, failureRedirect: '/login'}),
+    // Now we can use res.locals.returnTo to redirect the user after login
+    (req, res) => {
+        req.flash('success', 'Welcome back!');
+        const redirectUrl = res.locals.returnTo || '/campgrounds'; // update this line to use res.locals.returnTo now
+        res.redirect(redirectUrl);
+    });
+    
+In the login POST route code above, be sure to update the redirectUrl variable line to this: 
+const redirectUrl = res.locals.returnTo || '/campgrounds';
+
+By using the storeReturnTo middleware function, we can save the returnTo value to res.locals before 
+passport.authenticate() clears the session and deletes req.session.returnTo. This enables us to access and 
+use the returnTo value (via res.locals.returnTo) later in the middleware chain so that we can redirect users 
+to the appropriate page after they have logged in.
+
+With this fix in place, your application will now correctly redirect users to the page they were visiting 
+before being sent to the login page, even with the newest versions of Passport.js.
+
+If you need any help with this, feel free to reach out on the Q&A boards.
+
+Zarko Teaching Assistant
